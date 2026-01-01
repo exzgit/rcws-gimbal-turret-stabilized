@@ -7,6 +7,8 @@
  * Controls:
  *  - Left arrow  : send 'L'
  *  - Right arrow : send 'R'
+ *  - Up arrow    : send 'U' (increase pitch)
+ *  - Down arrow  : send 'D' (decrease pitch)
  *  - Space or s  : send 'S' (stop/neutral)
  *  - q or Ctrl-C : quit
  */
@@ -85,7 +87,7 @@ int main(int argc, char **argv)
     tcsetattr(STDIN_FILENO, TCSANOW, &raw);
 
     printf("Connected to %s at %d baud\n", port, baud);
-    printf("Use arrow keys to control, space or s to stop, q to quit\n");
+    printf("Use arrow keys (L/R/U/D), space or s to stop, q to quit\n");
 
     int running = 1;
     while (running) {
@@ -102,13 +104,19 @@ int main(int argc, char **argv)
             ssize_t r2 = read(STDIN_FILENO, &seq[1], 1);
             if (r1 <= 0 || r2 <= 0) continue;
             if (seq[0] == '[') {
-                if (seq[1] == 'D') {
-                    write(fd, "L", 1);
-                    printf("\r<- LEFT  "); fflush(stdout);
-                } else if (seq[1] == 'C') {
-                    write(fd, "R", 1);
-                    printf("\rRIGHT -> "); fflush(stdout);
-                }
+                    if (seq[1] == 'D') {
+                        write(fd, "L", 1);
+                        printf("\r<- LEFT  "); fflush(stdout);
+                    } else if (seq[1] == 'C') {
+                        write(fd, "R", 1);
+                        printf("\rRIGHT -> "); fflush(stdout);
+                    } else if (seq[1] == 'A') {
+                        write(fd, "U", 1);
+                        printf("\rUP      "); fflush(stdout);
+                    } else if (seq[1] == 'B') {
+                        write(fd, "D", 1);
+                        printf("\rDOWN    "); fflush(stdout);
+                    }
             }
         } else {
             if (ch == 'q' || ch == 'Q') {
