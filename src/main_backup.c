@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "stm32f4xx_hal.h"
 
 /* ===== Global handle ===== */
@@ -158,6 +159,13 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
+
+  /* Startup debug: notify via UART and set debug pin PB3 high */
+  {
+    const char msg[] = "BOOT\n";
+    HAL_UART_Transmit(&huart2, (uint8_t*)msg, sizeof(msg)-1, 100);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
+  }
 
   /* Start PWM */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
